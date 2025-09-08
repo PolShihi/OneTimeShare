@@ -1,0 +1,119 @@
+@model UploadViewModel
+@{
+    ViewData["Title"] = "Upload File";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2>Upload File</h2>
+        <p class="text-muted">Upload a file to generate a secure one-time download link.</p>
+
+        <form asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm">
+            @Html.AntiForgeryToken()
+            
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="File" class="form-label">Select File</label>
+                        <input asp-for="File" class="form-control" type="file" id="fileInput" />
+                        <span asp-validation-for="File" class="text-danger"></span>
+                        <div class="form-text">
+                            Maximum file size: @Model.MaxUploadSizeDisplay
+                        </div>
+                    </div>
+
+                    <div class="mb-3" id="filePreview" style="display: none;">
+                        <div class="alert alert-info">
+                            <strong>Selected file:</strong>
+                            <div id="fileName"></div>
+                            <div id="fileSize" class="small text-muted"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="alert alert-warning">
+                            <h6><strong>Important:</strong></h6>
+                            <ul class="mb-0">
+                                <li>The download link will work <strong>only once</strong></li>
+                                <li>The file will be <strong>permanently deleted</strong> after first download</li>
+                                <li>Files automatically expire after 30 days</li>
+                                <li>Keep the download link secure and share it only with intended recipients</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="uploadBtn">
+                            <span id="uploadBtnText">
+                                <i class="bi bi-cloud-upload"></i> Upload File
+                            </span>
+                            <span id="uploadBtnSpinner" style="display: none;">
+                                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                Uploading...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="mt-3">
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('filePreview');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            
+            if (file) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatBytes(file.size);
+                preview.style.display = 'block';
+                
+                // Check file size
+                const maxSize = @Model.MaxUploadBytes;
+                if (file.size > maxSize) {
+                    preview.className = 'alert alert-danger';
+                    fileName.innerHTML = '<strong>⚠️ ' + file.name + '</strong>';
+                    fileSize.textContent = formatBytes(file.size) + ' (exceeds maximum size of @Model.MaxUploadSizeDisplay)';
+                    document.getElementById('uploadBtn').disabled = true;
+                } else {
+                    preview.className = 'alert alert-info';
+                    fileName.innerHTML = '<strong>' + file.name + '</strong>';
+                    fileSize.textContent = formatBytes(file.size);
+                    document.getElementById('uploadBtn').disabled = false;
+                }
+            } else {
+                preview.style.display = 'none';
+                document.getElementById('uploadBtn').disabled = false;
+            }
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            const uploadBtn = document.getElementById('uploadBtn');
+            const uploadBtnText = document.getElementById('uploadBtnText');
+            const uploadBtnSpinner = document.getElementById('uploadBtnSpinner');
+            
+            uploadBtn.disabled = true;
+            uploadBtnText.style.display = 'none';
+            uploadBtnSpinner.style.display = 'inline';
+        });
+
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+    </script>
+}

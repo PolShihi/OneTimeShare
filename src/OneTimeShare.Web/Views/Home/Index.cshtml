@@ -1,0 +1,89 @@
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to OneTime Share</h1>
+    <p class="lead">Secure one-time file sharing with automatic cleanup</p>
+</div>
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Ready to share a file?</h5>
+                    <p class="card-text">Upload a file and get a secure one-time download link that expires after first use.</p>
+                    <a asp-controller="Files" asp-action="Upload" class="btn btn-primary btn-lg">
+                        <i class="bi bi-cloud-upload"></i> Upload File
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-10">
+            <div class="alert alert-info">
+                <h6><strong>How it works:</strong></h6>
+                <ul class="mb-0">
+                    <li>Upload your file securely</li>
+                    <li>Get a unique download link</li>
+                    <li>Share the link with anyone</li>
+                    <li>File is automatically deleted after first download</li>
+                    <li>All files expire after 30 days for security</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Get Started</h5>
+                    <p class="card-text">Sign in with your Google account to start sharing files securely.</p>
+                    <a asp-controller="Auth" asp-action="Login" class="btn btn-primary btn-lg">
+                        <i class="bi bi-google"></i> Sign in with Google
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+            <div class="card border-0">
+                <div class="card-body">
+                    <h6 class="text-center mb-3">Features</h6>
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-shield-check text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6>Secure</h6>
+                            <p class="small text-muted">Files are encrypted and protected with one-time tokens</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-clock text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6>One-Time Use</h6>
+                            <p class="small text-muted">Links work only once and files are deleted immediately</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-trash text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6>Auto-Cleanup</h6>
+                            <p class="small text-muted">All files automatically expire after 30 days</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
