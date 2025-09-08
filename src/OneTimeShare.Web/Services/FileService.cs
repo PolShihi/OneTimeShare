@@ -34,25 +34,21 @@ public class FileService : IFileService
         string contentType, 
         Stream fileStream)
     {
-        // Generate one-time token
         var (tokenPlain, tokenHash, salt) = _tokenService.GenerateToken();
         
-        // Get file extension safely
         var extension = Path.GetExtension(originalFileName);
         if (string.IsNullOrEmpty(extension))
         {
-            extension = ".bin"; // Default extension for files without one
+            extension = ".bin"; 
         }
 
-        // Save file to storage
         var (storagePath, sizeBytes) = await _storageService.SaveAsync(fileStream, extension);
 
-        // Create database record
         var storedFile = new StoredFile
         {
             Id = Guid.NewGuid(),
             OwnerId = userId,
-            OriginalFileName = Path.GetFileName(originalFileName), // Sanitize filename
+            OriginalFileName = Path.GetFileName(originalFileName), 
             ContentType = contentType,
             SizeBytes = sizeBytes,
             StoragePath = storagePath,
@@ -78,7 +74,6 @@ public class FileService : IFileService
         {
             _logger.LogError(ex, "Failed to save file metadata for user {UserId}", userId);
             
-            // Clean up the physical file if database save failed
             try
             {
                 await _storageService.DeleteAsync(storagePath);
@@ -103,7 +98,7 @@ public class FileService : IFileService
         
         try
         {
-            // Find the file record
+            
             var storedFile = await _context.StoredFiles
                 .Where(f => f.Id == fileId && f.DeletedAtUtc == null)
                 .FirstOrDefaultAsync();
@@ -114,28 +109,28 @@ public class FileService : IFileService
                 return DownloadResult.NotFound();
             }
 
-            // Check if file has expired
+            
             if (storedFile.ExpiresAtUtc.HasValue && storedFile.ExpiresAtUtc.Value < DateTime.UtcNow)
             {
                 _logger.LogWarning("Download attempt for expired file {FileId}", fileId);
                 return DownloadResult.Expired();
             }
 
-            // Check if token has already been used
+            
             if (storedFile.TokenUsedAtUtc.HasValue)
             {
                 _logger.LogWarning("Download attempt for already used token, file {FileId}", fileId);
                 return DownloadResult.AlreadyUsed();
             }
 
-            // Verify token
+            
             if (!_tokenService.VerifyToken(token, storedFile.OneTimeTokenHash, storedFile.TokenSalt))
             {
                 _logger.LogWarning("Download attempt with invalid token for file {FileId}", fileId);
                 return DownloadResult.NotFound();
             }
 
-            // Mark token as used and file as deleted (conditional update for concurrency safety)
+            
             var now = DateTime.UtcNow;
             var originalConcurrencyStamp = storedFile.ConcurrencyStamp;
             storedFile.TokenUsedAtUtc = now;
@@ -154,7 +149,7 @@ public class FileService : IFileService
                 return DownloadResult.AlreadyUsed();
             }
 
-            // Open file stream
+            
             Stream fileStream;
             try
             {
@@ -170,7 +165,7 @@ public class FileService : IFileService
 
             _logger.LogInformation("Successful one-time download for file {FileId} by user {UserId}", fileId, storedFile.OwnerId);
 
-            // Schedule physical file deletion (fire and forget)
+            
             _ = Task.Run(async () =>
             {
                 try

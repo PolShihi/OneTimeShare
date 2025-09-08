@@ -30,7 +30,7 @@ public class HealthController : ControllerBase
     {
         try
         {
-            // Check database connectivity
+            
             await _context.Database.CanConnectAsync();
             
             return Ok(new 

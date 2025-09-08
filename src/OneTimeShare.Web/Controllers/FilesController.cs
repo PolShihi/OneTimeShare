@@ -106,8 +106,8 @@ public class FilesController : Controller
     [HttpGet]
     public IActionResult Success(Guid id)
     {
-        // This action is mainly for direct navigation to success page
-        // The actual success view is typically shown after upload
+        
+        
         return RedirectToAction("Upload");
     }
 }
@@ -142,7 +142,7 @@ public class DownloadController : Controller
                 case DownloadResultType.Success:
                     _logger.LogInformation("Successful download for file {FileId}", fileId);
                     
-                    // Set security headers
+                    
                     Response.Headers.Add("X-Content-Type-Options", "nosniff");
                     Response.Headers.Add("Cache-Control", "no-store");
                     

@@ -13,7 +13,7 @@ public class LocalFileStorageService : IStorageService
         _storageRoot = options.Value.StorageRoot;
         _logger = logger;
         
-        // Ensure storage directory exists
+        
         Directory.CreateDirectory(_storageRoot);
     }
 
@@ -24,7 +24,7 @@ public class LocalFileStorageService : IStorageService
         var relativePath = Path.Combine("files", fileName);
         var fullPath = Path.Combine(_storageRoot, relativePath);
         
-        // Ensure subdirectory exists
+        
         var directory = Path.GetDirectoryName(fullPath);
         if (!string.IsNullOrEmpty(directory))
         {
@@ -44,7 +44,7 @@ public class LocalFileStorageService : IStorageService
         {
             _logger.LogError(ex, "Failed to save file to {RelativePath}", relativePath);
             
-            // Clean up partial file if it exists
+            
             if (File.Exists(fullPath))
             {
                 try

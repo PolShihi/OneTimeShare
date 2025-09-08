@@ -54,7 +54,7 @@ public class AuthController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        // Find or create user account
+        
         var userAccount = await _context.UserAccounts.FirstOrDefaultAsync(u => u.Id == subClaim);
         var now = DateTime.UtcNow;
 
@@ -74,7 +74,7 @@ public class AuthController : Controller
         }
         else
         {
-            // Update last login and potentially email/name if changed
+            
             userAccount.LastLoginAtUtc = now;
             userAccount.Email = emailClaim;
             userAccount.DisplayName = nameClaim;
@@ -82,7 +82,7 @@ public class AuthController : Controller
 
         await _context.SaveChangesAsync();
 
-        // Create application claims
+        
         var appClaims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, userAccount.Id),

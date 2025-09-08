@@ -78,7 +78,7 @@
                 fileSize.textContent = formatBytes(file.size);
                 preview.style.display = 'block';
                 
-                // Check file size
+                
                 const maxSize = @Model.MaxUploadBytes;
                 if (file.size > maxSize) {
                     preview.className = 'alert alert-danger';

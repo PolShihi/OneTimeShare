@@ -5,12 +5,12 @@ namespace OneTimeShare.Web.Services;
 
 public class TokenService : ITokenService
 {
-    private const int TokenLengthBytes = 32; // 256 bits
-    private const int SaltLengthBytes = 16; // 128 bits
+    private const int TokenLengthBytes = 32; 
+    private const int SaltLengthBytes = 16; 
 
     public (string tokenPlain, string tokenHash, string salt) GenerateToken()
     {
-        // Generate cryptographically secure random token
+        
         var tokenBytes = new byte[TokenLengthBytes];
         using (var rng = RandomNumberGenerator.Create())
         {
@@ -18,7 +18,7 @@ public class TokenService : ITokenService
         }
         var tokenPlain = Convert.ToBase64String(tokenBytes).Replace('+', '-').Replace('/', '_').TrimEnd('=');
 
-        // Generate salt
+        
         var saltBytes = new byte[SaltLengthBytes];
         using (var rng = RandomNumberGenerator.Create())
         {
@@ -26,7 +26,7 @@ public class TokenService : ITokenService
         }
         var salt = Convert.ToBase64String(saltBytes);
 
-        // Hash token with salt
+        
         var tokenHash = HashToken(tokenPlain, salt);
 
         return (tokenPlain, tokenHash, salt);
@@ -43,7 +43,7 @@ public class TokenService : ITokenService
         {
             var computedHash = HashToken(tokenPlain, salt);
             
-            // Constant-time comparison to prevent timing attacks
+            
             return CryptographicOperations.FixedTimeEquals(
                 Encoding.UTF8.GetBytes(computedHash),
                 Encoding.UTF8.GetBytes(tokenHash)

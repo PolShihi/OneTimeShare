@@ -88,12 +88,12 @@
             const copyBtn = document.getElementById('copyBtn');
             
             urlInput.select();
-            urlInput.setSelectionRange(0, 99999); // For mobile devices
+            urlInput.setSelectionRange(0, 99999); 
             
             try {
                 document.execCommand('copy');
                 
-                // Update button text temporarily
+                
                 const originalHtml = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="bi bi-check"></i> Copied!';
                 copyBtn.classList.remove('btn-outline-secondary');
@@ -121,12 +121,12 @@
                     url: url
                 }).catch(console.error);
             } else {
-                // Fallback: copy to clipboard
+                
                 copyToClipboard();
             }
         }
 
-        // Show warning when user tries to leave the page
+        
         let warningShown = false;
         window.addEventListener('beforeunload', function(e) {
             if (!warningShown) {
@@ -137,7 +137,7 @@
             }
         });
 
-        // Remove warning when user clicks on navigation links within the app
+        
         document.querySelectorAll('a[href^="/"], a[asp-controller], a[asp-action]').forEach(link => {
             link.addEventListener('click', () => {
                 warningShown = true;

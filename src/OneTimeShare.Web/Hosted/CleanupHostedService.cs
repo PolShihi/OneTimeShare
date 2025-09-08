@@ -17,7 +17,7 @@ public class CleanupHostedService : BackgroundService
         _serviceProvider = serviceProvider;
         _logger = logger;
         
-        // Default to run cleanup every 24 hours
+        
         var intervalMinutes = int.Parse(Environment.GetEnvironmentVariable("CLEANUP_INTERVAL_MINUTES") ?? "1440");
         _cleanupInterval = TimeSpan.FromMinutes(intervalMinutes);
     }
@@ -26,10 +26,10 @@ public class CleanupHostedService : BackgroundService
     {
         _logger.LogInformation("Cleanup service starting. Interval: {Interval}", _cleanupInterval);
 
-        // Run initial cleanup on startup
+        
         await PerformCleanupAsync(stoppingToken);
 
-        // Then run periodically
+        
         using var timer = new PeriodicTimer(_cleanupInterval);
         
         while (!stoppingToken.IsCancellationRequested && await timer.WaitForNextTickAsync(stoppingToken))
@@ -52,7 +52,7 @@ public class CleanupHostedService : BackgroundService
 
             _logger.LogInformation("Starting cleanup process at {Now}", now);
 
-            // Find expired files that haven't been deleted yet
+            
             var expiredFiles = await context.StoredFiles
                 .Where(f => f.ExpiresAtUtc.HasValue && f.ExpiresAtUtc.Value < now && f.DeletedAtUtc == null)
                 .ToListAsync(cancellationToken);
@@ -61,13 +61,13 @@ public class CleanupHostedService : BackgroundService
             {
                 try
                 {
-                    // Mark as deleted in database
+                    
                     file.DeletedAtUtc = now;
                     file.ConcurrencyStamp = Guid.NewGuid().ToString();
                     
                     await context.SaveChangesAsync(cancellationToken);
                     
-                    // Delete physical file
+                    
                     if (storageService.FileExists(file.StoragePath))
                     {
                         await storageService.DeleteAsync(file.StoragePath);
@@ -82,7 +82,7 @@ public class CleanupHostedService : BackgroundService
                 }
             }
 
-            // Find files marked as deleted but still exist on disk (orphaned files)
+            
             var deletedFiles = await context.StoredFiles
                 .Where(f => f.DeletedAtUtc.HasValue)
                 .Select(f => new { f.Id, f.StoragePath })
@@ -105,7 +105,7 @@ public class CleanupHostedService : BackgroundService
                 }
             }
 
-            // Remove old database records (older than retention period + 7 days for safety)
+            
             var cutoffDate = now.AddDays(-(int.Parse(Environment.GetEnvironmentVariable("FILE_RETENTION_DAYS") ?? "30") + 7));
             var oldRecords = await context.StoredFiles
                 .Where(f => f.DeletedAtUtc.HasValue && f.DeletedAtUtc.Value < cutoffDate)

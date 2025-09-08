@@ -1,8 +1,8 @@
-// Write your JavaScript code here.
 
-// Global utility functions
+
+
 window.OneTimeShare = {
-    // Format bytes to human readable format
+    
     formatBytes: function(bytes, decimals = 2) {
         if (bytes === 0) return '0 Bytes';
         const k = 1024;
@@ -12,12 +12,12 @@ window.OneTimeShare = {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     },
 
-    // Copy text to clipboard
+    
     copyToClipboard: function(text) {
         if (navigator.clipboard && window.isSecureContext) {
             return navigator.clipboard.writeText(text);
         } else {
-            // Fallback for older browsers
+            
             const textArea = document.createElement("textarea");
             textArea.value = text;
             textArea.style.position = "fixed";
@@ -39,7 +39,7 @@ window.OneTimeShare = {
         }
     },
 
-    // Show temporary success message
+    
     showSuccessMessage: function(element, message, duration = 2000) {
         const originalContent = element.innerHTML;
         const originalClasses = element.className;
@@ -54,15 +54,15 @@ window.OneTimeShare = {
     }
 };
 
-// Initialize Bootstrap tooltips if present
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
+    
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
     tooltipTriggerList.map(function (tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    // Initialize popovers
+    
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
